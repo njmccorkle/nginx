@@ -7,7 +7,7 @@ services:
     network_mode: "host"
     volumes:
       - /mnt/docker/nginx/conf.d:/etc/nginx/conf.d
-      - /mnt/docker/letsencrypt:/etc/letsencrypt
+      - /mnt/docker/nginx/letsencrypt:/etc/letsencrypt
       - /mnt/docker/nginx/logs:/var/log/nginx
     ports:
       - "80:80"
@@ -17,5 +17,5 @@ services:
     image: certbot/dns-cloudflare
     restart: unless-stopped
     volumes:
-      - /mnt/docker/letsencrypt:/etc/letsencrypt
+      - /mnt/docker/nginx/letsencrypt:/etc/letsencrypt
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
