@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:1.15-alpine
+    restart: unless-stopped
+    network_mode: "host"
+    volumes:
+      - /mnt/docker/nginx/conf.d:/etc/nginx/conf.d
+      - /mnt/docker/letsencrypt:/etc/letsencrypt
+      - /mnt/docker/nginx/logs:/var/log/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  certbot:
+    image: certbot/dns-cloudflare
+    restart: unless-stopped
+    volumes:
+      - /mnt/docker/letsencrypt:/etc/letsencrypt
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
